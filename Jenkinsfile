@@ -93,12 +93,24 @@ pipeline {
       }
     }
 
-      post{
-	  always {
-	 	    echo 'slack Notifications.'
-		    slackSend channel: '#cicd',
-			color:COLOR_MAP[currentBuild.currentResult],
-			message: "*${currentBuild.currentResult}:*Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at : ${env.BUILD_URL}"
+      post {
+  always {
+    echo 'Slack Notifications.'
+    script {
+      def COLOR_MAP = [
+        'SUCCESS': '#2eb886',
+        'FAILURE': '#ff0000',
+        'ABORTED': '#808080',
+        'UNSTABLE': '#daa038'
+      ]
+      
+      slackSend(
+        channel: '#cicd',
+        color: COLOR_MAP[currentBuild.currentResult] ?: '#cccccc',
+        message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \nMore info at: ${env.BUILD_URL}"
+      )
+    }
+  }
 }
-}
+
 }
